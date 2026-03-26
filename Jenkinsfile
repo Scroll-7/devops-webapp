@@ -7,11 +7,9 @@ pipeline {
     }
 
     environment {
-        // Tomcat credentials stored in Jenkins (ID 'tomcat-credentials')
         TOMCAT_CREDS = credentials('tomcat-credentials')
         TOMCAT_URL = 'http://localhost:8081/manager/text'
         APP_PATH = '/devops-demo'
-        WAR_FILE = 'target/*.war'
     }
 
     stages {
@@ -34,19 +32,20 @@ pipeline {
             }
         }
 
-      	stage('Deploy to Tomcat') {
-    steps {
-        script {
-            // Directly use the known WAR file path
-            def warFile = 'target/my-webapp.war'
-            sh """
-                curl -u ${TOMCAT_CREDS_USR}:${TOMCAT_CREDS_PSW} \
-                     -T ${warFile} \
-                     "${TOMCAT_URL}/deploy?path=${APP_PATH}&update=true"
-            """
+        stage('Deploy to Tomcat') {
+            steps {
+                script {
+                    // Use the known WAR file name
+                    def warFile = 'target/my-webapp.war'
+                    sh """
+                        curl -u ${TOMCAT_CREDS_USR}:${TOMCAT_CREDS_PSW} \
+                             -T ${warFile} \
+                             "${TOMCAT_URL}/deploy?path=${APP_PATH}&update=true"
+                    """
+                }
+            }
         }
     }
-}
 
     post {
         always {
