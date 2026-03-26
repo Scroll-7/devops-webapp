@@ -34,22 +34,19 @@ pipeline {
             }
         }
 
-        stage('Deploy to Tomcat') {
-            steps {
-                script {
-                    // Find the exact WAR file name (there should be only one)
-                    def warFile = findFiles(glob: 'target/*.war')[0].path
-                    
-                    // Deploy using Tomcat Manager API
-                    sh """
-                        curl -u ${TOMCAT_CREDS_USR}:${TOMCAT_CREDS_PSW} \
-                             -T ${warFile} \
-                             "${TOMCAT_URL}/deploy?path=${APP_PATH}&update=true"
-                    """
-                }
-            }
+      	stage('Deploy to Tomcat') {
+    steps {
+        script {
+            // Directly use the known WAR file path
+            def warFile = 'target/my-webapp.war'
+            sh """
+                curl -u ${TOMCAT_CREDS_USR}:${TOMCAT_CREDS_PSW} \
+                     -T ${warFile} \
+                     "${TOMCAT_URL}/deploy?path=${APP_PATH}&update=true"
+            """
         }
     }
+}
 
     post {
         always {
